@@ -720,7 +720,8 @@ Ensure that you have executed the code block once you are done. You'll know the 
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p><strong>Answer: </strong> The grid search algorithm does the job of an feature selection. Feature selection in my experience is - besides data preparation - the most important part of fitting a model. Grid search exhaustively runs over a range of parameter and evaluates the combination of features which result in the most explanatory power combined. It does so by repeatetly dividing the sample into training and test sets (cross validation), in order to obtain independent measures per feature combination</p>
+<p><strong>Answer: </strong> V2 -- The grid search algorithm does the job of optimizing the parameter value for a model. In contrast to the model itself, which focuses on the available training data and tries to minimize a loss function or maximize a gain function on it, grid search aims to ensure that the model does not overfit the training data, but in contrast generalizes well on the test data. A grid search algorithm runs exhaustively over a manually confined set of model parameter values. Typically, one measures the outcomes of the so created models by looking at the performance of the models on the test set. Often, this is done by additionally applying cross validation, and subsequently using the average test set performance as the performance metric.</p>
+<p>Grid search is useful when there are multiple parametrization options on how to tune a model. For the here used tree, the parameter is the depth of the tree, and one must choose an optimal parameter option (max_depth) to prune the tree.</p>
 
 </div>
 </div>
@@ -741,6 +742,8 @@ Ensure that you have executed the code block once you are done. You'll know the 
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><strong>Answer: </strong> By dividing the sample into a training and a test set, we avoid the "leakage" problem, as described above. However, the division of the sample into two sets is random and arbitrary. So, a test set could by chance contain a completely different pattern than the training set. In plus, we want to maximize the training set size in order to get the best learning result, and at the same time maximize the test set size in order to get the best validation. Both issues are addressed by cross validation: Instead of only one split, we split the data in k equally sized sets (k-1 splits). We run then k independent measuring experiments, each time with k-1 sample buckets as training set, and 1 bucket as test set. The average score/loss function over all k test sets is the performance metric for the model.</p>
+<p>V2 -- Since grid search is aimed at preventing overfitting, it goes well together with cross validation: The grid search performance metric is measured on the test set for a specific parameter value. By running k independent experiments with one chosen model parameter value, one ensures that the guiding metric in grid search is not the product of one arbitrary split between training and test set, but the average of k-1 splits.</p>
+<p>V2 -- Example: if by chance training and test set are very similar, an overfitted model will perform well on the test set as well, and thus will leave the grid search algorithm in the belief that the model is NOT overfitted. Repeated measures over different test sets will prevent such deception.</p>
 
 </div>
 </div>
@@ -1877,7 +1880,7 @@ UgAAAABJRU5ErkJggg==
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p><strong>Answer: </strong> I look the model with max_depth = 6.</p>
+<p><strong>Answer: </strong> I look at the model with max_depth = 6.</p>
 <p>The training error increases very slightly with increasing set size on a generally very moderate level (compared to models with less max_depth). As expected, the bias generally decreases with increasing model complexity, and generally the underfitting (if present as in models max_depth = 1 and max_depth = 3) becomes more obvious, the more data is available in the training set.</p>
 <p>Back to model max_depth = 6: the error of the test set decreases up to where the test set size is so small, that probably there are too few data points to obtain a stable test error. The test error levels off at around 20, which is about the level of model max_depth = 3, but with more variance than the one from max_depth = 3.</p>
 <p>All together, max_depth = 3 seems to underfit a bit, max_depth = 6 suffers more from high variance in the test set. This is an indication that the optimal max_depth lies between max_depth = 3 and max_depth = 6.</p>
@@ -1901,6 +1904,8 @@ UgAAAABJRU5ErkJggg==
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><strong>Answer: </strong> The model suffers from high bias when max_depth = 1, it suffers from high variance when max_depth = 10.</p>
+<p>V2 -- The high bias in model max_depth = 1 is already reached at small training set sizes and does not vanish even with massive size increase. There is clearly a misconception of the underlying data structure present. The level of the training set error is not reached by any other model. On the other hand, the test set shows no error variance at all after some point of increasing the training set size.</p>
+<p>With a complex model with parameter value 10, one cleary sees that the training set data structure is extremely well adapted by the model, even already at very small training set sizes. There is hence no high bias present. In the light of the bias-variance-tradeoff, we then observe the very unstable test set error at high level, indicating indeed that the model suffers from high variance in the test set.</p>
 
 </div>
 </div>
@@ -2296,6 +2301,7 @@ SUVORK5CYII=
 <p><strong>Answer: </strong> As the complexity of the model increases, the training set error decreases with decreasing slope: Might the first steps of increasing complexity result in a significantly lowered bias, this gain decreases over-proportionally with additional complexity.</p>
 <p>The test error shapes a U-function with increasing complexity: the first steps of increasing complexity result in a significantly lowered test error, but a some point the overfitting is exposed: the test error increases with increasing complexity, i.e. the model is adapting too much to the training data and shows poor results on independent test data.</p>
 <p>To trade-off bias and variance, I argue that a max_depth around 4 or 5 is the best choice: The test error is at its lowest level (the model generalizes well) and the training error is close enough to the lowest possible level (the model is reasonably unbiased).</p>
+<p>V2 -- I will eventually pick the model with max_depth = 4. This is the simplest model at which the lowest (or close to lowest) test set error is reached.</p>
 
 </div>
 </div>
